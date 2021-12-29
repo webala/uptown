@@ -16,8 +16,7 @@
 }
 
 .product-image {
-    display: inline-block;
-    width: 347px;
+    width: 100%;
 }
 
 .cart-row {
