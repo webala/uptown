@@ -19,3 +19,32 @@
     display: inline-block;
     width: 347px;
 }
+
+.cart-row {
+    display: flex;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #ececec;
+    justify-content: center;
+    align-items: center;
+}
+
+.cart-row .product-image {
+    display: inline-block;
+    width: 90%;
+    margin-right: 100px;
+}
+.quantity {
+    display: inline-block;
+}
+.up{
+    width: 15px;
+}
+.down{
+    width: 10px;
+
+}
+.form-field {
+    display: inline-block;
+    margin: 5px;
+}
