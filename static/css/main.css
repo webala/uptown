@@ -1,0 +1,21 @@
+#cart-icon {
+    height: 3rem;
+    width: 3rem;
+    margin-left: 20px;
+}
+
+.box-element {
+    box-shadow: hsl(0, 0%,80%) 0 0 16px;
+    background-color: #fff;
+    border-radius: 4px;
+    padding: 10px;
+}
+
+.product {
+    border-radius: 0 0 4px 4px;
+}
+
+.product-image {
+    display: inline-block;
+    width: 347px;
+}
