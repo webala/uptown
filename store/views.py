@@ -5,6 +5,8 @@ from .models import Product
 
 def store(request):
     products = Product.objects.all()
+    for product in products:
+        print(product.imageURL)
     context = {
         'products': products
     }
