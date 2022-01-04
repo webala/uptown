@@ -20,6 +20,10 @@
     height: 159px;
 }
 
+summary.product-image {
+    width: 50px!important;
+}
+
 .cart-row {
     display: flex;
     padding-bottom: 10px;
