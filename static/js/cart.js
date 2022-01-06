@@ -18,11 +18,9 @@ updateBtns.forEach((btn) => {
 });
 
 function updateUserOrder (productId, action) {
-    console.log('User authenticated, sending data.')
-
+   
     let url = '/update_item/';
     
-
     fetch(url, {
         method: 'POST',
         headers: {

@@ -38,8 +38,8 @@
                         <div style='flex:2'>${{item.product.price|floatformat:2}}</div>
                         <div style='flex:2'>
                             <div class="quantity">
-                                <img src="{% static 'images/arrow-up.png' %}" alt="up-btn" class="up">
-                                <img src="{% static 'images/arrow-down.png' %}" alt="up-btn" class="down">
+                                <img data-product="{{item.product.id}}" data-action="add" src="{% static 'images/arrow-up.png' %}" alt="up-btn" class="up update-cart">
+                                <img data-product="{{item.product.id}}" data-action="remove" src="{% static 'images/arrow-down.png' %}" alt="up-btn" class="down update-cart">
                                 <p class="quantity">{{item.quantity}}</p>
                             </div>
                         </div>

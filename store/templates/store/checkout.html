@@ -17,9 +17,10 @@
                             <input type="email" class="form-control" name='email' placeholder='Email address'>
                         </div>
                     </div>
-                    <h5>Shipping information</h5>
-                    <hr>
+                    
                     <div class="shipping-info">
+                        <h5>Shipping information</h5>
+                        <hr>
                         <div class="form-field">
                             <input type="text" class="form-control" name='city' placeholder='City'>
                         </div>
@@ -43,6 +44,7 @@
 
             <div id="payment-options" class='box-element mt-3 d-none'>
                 <small>Paypal options</small>
+                <button class="make-payment btn btn-primary">Make Payment</button>
             </div>
         </div>
 
@@ -76,4 +78,24 @@
             </div>
         </div>
     </div>
+
+    <script type='text/javascript'>
+        var shipping = '{{order.shipping}}';
+        var shipping_div = document.querySelector('.shipping-info');
+        shipping == 'False' ? shipping_div.classList.add('d-none') : shipping_div.classList.remove('d-none');  
+
+        let form = document.querySelector('#form');
+        
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            document.querySelector('#form-button').classList.add('d-none');
+            document.querySelector('#payment-options').classList.remove('d-none');
+        })
+
+        document.querySelector('.make-payment').addEventListener('click', () => submitFormData())
+
+        function submitFormData() {
+            console.log('payment button clicked')
+        }
+    </script>
 {% endblock %}

@@ -13,6 +13,27 @@
     
     <!--Local CSS-->
     <link rel="stylesheet" type='text/css' href="{% static 'css/main.css' %}">
+    <script type='text/javascript'>
+        var user = '{{request.user}}';
+
+        function getToken(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+    const csrftoken = getToken('csrftoken');
+    </script>
 </head>
 <body>
 
@@ -29,5 +50,7 @@
         integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" 
         crossorigin="anonymous">
     </script>
+    <script type='text/javascript' src="{% static 'js/cart.js' %}"></script>
+    
 </body>
 </html>

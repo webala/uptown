@@ -19,8 +19,11 @@
           <a href="{% url 'cart' %}">
               <img src="{% static 'images/cart-icon.png' %}" alt="cart icon" id="cart-icon">
           </a>
-          <p id='cart-total' class='text-danger text-sm'>0</p>
+          <p id='cart-total' class='text-danger text-sm'></p>
            
       </div>
     </div>
   </nav>
+  <script type='text/javascript' src='{% static "js/cartItems.js" %}'>
+
+  </script>
