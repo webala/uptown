@@ -7,7 +7,7 @@
     <div class="row">
         <div class="col-lg-6">
             <div class="box-element" id='form-wrapper'>
-                <form action="#" id="form">
+                <form action="#" id="form" method='post'>
 
                     <div class="user-info mb-3">
                         <div class="form-field">
@@ -82,7 +82,17 @@
     <script type='text/javascript'>
         var shipping = '{{order.shipping}}';
         var shipping_div = document.querySelector('.shipping-info');
+        var user_info_div = document.querySelector('.user-info');
+        
+
         shipping == 'False' ? shipping_div.classList.add('d-none') : shipping_div.classList.remove('d-none');  
+
+        user != 'AnonymousUser' ? user_info_div.classList.add('d-none') : user_info_div.classList.remove('d-none');
+
+        if (shipping == 'False' && user != 'AnonymousUser') {
+            document.getElementById('form-wrapper').classList.add('d-none');
+            document.getElementById('payment-options').classList.remove('d-none');
+        }
 
         let form = document.querySelector('#form');
         
@@ -95,7 +105,21 @@
         document.querySelector('.make-payment').addEventListener('click', () => submitFormData())
 
         function submitFormData() {
-            console.log('payment button clicked')
+            const formData = new FormData(form);
+            console.log(JSON.stringify(formData));
+
+            let url = '/process_order/';
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                },
+                body: JSON.stringify(formData)
+            }).then(response => response.json())
+            .then(data => console.log('Success: ', data))
+            .catch(error => console.log('Error: ', error));
         }
     </script>
 {% endblock %}

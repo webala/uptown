@@ -81,3 +81,6 @@ def get_cart_total(request):
     else:
         return JsonResponse({'cart_items': 0})
 
+def process_order(request):
+    return JsonResponse('Payment complete', safe=False)
+
