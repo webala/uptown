@@ -106,7 +106,7 @@
 
         function submitFormData() {
             const formData = new FormData(form);
-            console.log(JSON.stringify(formData));
+            console.log(formData);
 
             let url = '/process_order/';
 
@@ -116,7 +116,7 @@
                     'Content-type': 'application/json',
                     'X-CSRFToken': csrftoken
                 },
-                body: JSON.stringify(formData)
+                body: formData
             }).then(response => response.json())
             .then(data => console.log('Success: ', data))
             .catch(error => console.log('Error: ', error));
