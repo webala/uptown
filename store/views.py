@@ -2,7 +2,8 @@ from django.shortcuts import render
 from django.http import JsonResponse
 import json
 from .models import *
-
+from .serializers import ShippingSerializer
+import datetime
 # Create your views here.
 
 def store(request):
@@ -45,7 +46,7 @@ def checkout(request):
     return render(request, 'store/checkout.html', context)
 
 def update_item(request):
-    data =json.loads(request.body)
+    data = json.loads(request.body)
     product_id = data.get('productId')
     action = data.get('action')
     
@@ -82,7 +83,32 @@ def get_cart_total(request):
         return JsonResponse({'cart_items': 0})
 
 def process_order(request):
-    
-    print(request.body)
+    transaction_id = datetime.datetime.now().timestamp()
+    data = json.loads(request.body)
+
+    if request.user.is_authenticated:
+        customer = request.user.customer
+        order, created = Order.objects.get_or_create(customer=customer, complete=False)
+        total = float(data['form']['total'])
+        order.transaction_id = transaction_id
+
+        if total == order.get_cart_total:
+            order.complete = True
+        order.save()
+
+        if order.shipping:
+            ShippingAddress.objects.create(
+                customer = customer,
+                order = order,
+                address = data['shipping']['address'],
+                city = data['shipping']['city'],
+                street = data['shipping']['street'],
+                house = data['shipping']['house']
+            )
+
+    else:
+        print('User not loggid in')
+    #serializer = ShippingSerializer(data=request.data)
+    print(data)
     return JsonResponse('Payment complete', safe=False)
 

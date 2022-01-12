@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     #own
     'store',
     #third party
-    'bootstrap5'
+    'bootstrap5',
+    'rest_framework'
 ]
 
 MIDDLEWARE = [

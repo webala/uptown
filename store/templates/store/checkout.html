@@ -11,10 +11,10 @@
 
                     <div class="user-info mb-3">
                         <div class="form-field">
-                            <input type="text" class="form-control" name='name' placeholder='Name'>
+                            <input type="text" class="form-control" name='name' id='name' placeholder='Name'>
                         </div>
                         <div class="form-field">
-                            <input type="email" class="form-control" name='email' placeholder='Email address'>
+                            <input type="email" class="form-control" name='email' id='email' placeholder='Email address'>
                         </div>
                     </div>
                     
@@ -22,19 +22,19 @@
                         <h5>Shipping information</h5>
                         <hr>
                         <div class="form-field">
-                            <input type="text" class="form-control" name='city' placeholder='City'>
+                            <input type="text" class="form-control" name='city' id='city' placeholder='City'>
                         </div>
 
                         <div class="form-field">
-                            <input type="text" class="form-control" name='address' placeholder='Address'>
+                            <input type="text" class="form-control" name='address' id='address' placeholder='Address'>
                         </div>
 
                         <div class="form-field">
-                            <input type="text" class="form-control" name='street' placeholder='Street'>
+                            <input type="text" class="form-control" name='street' id='street' placeholder='Street'>
                         </div>
 
                         <div class="form-field">
-                            <input type="text" class="form-control" name='house' placeholder='House'>
+                            <input type="text" class="form-control" name='house' id='house' placeholder='House'>
                         </div>
                     </div>
                     <hr>
@@ -94,7 +94,7 @@
             document.getElementById('payment-options').classList.remove('d-none');
         }
 
-        let form = document.querySelector('#form');
+        let form = document.getElementById('form');
         
         form.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -105,8 +105,38 @@
         document.querySelector('.make-payment').addEventListener('click', () => submitFormData())
 
         function submitFormData() {
-            const formData = new FormData(form);
-            console.log(formData);
+            //const formData = new FormData(form);
+            //console.log(formData.entries());
+            let form = document.getElementById('form');
+            //let formData = new FormData(form);
+
+
+            var userFormData = {
+                'name': null,
+                'email': null,
+                'total': "{{order.get_cart_total}}"
+            }
+
+            var shippingInfo = {
+                'city': null,
+                'street': null,
+                'address': null,
+                'house': null
+            }
+
+            if (shipping != 'False') {
+                shippingInfo.address = form.address.value;
+                shippingInfo.city = form.city.value;
+                shippingInfo.street = form.street.value;
+                shippingInfo.house = form.house.value;
+            }
+
+            if (user == 'AnonymousUser') {
+                userFormData.name = form.name.value;
+                userFormData.email = form.email.value;
+            }
+            const data = {'form': userFormData, 'shipping': shippingInfo};
+            console.log(data.shipping);
 
             let url = '/process_order/';
 
@@ -114,11 +144,17 @@
                 method: 'POST',
                 headers: {
                     'Content-type': 'application/json',
-                    'X-CSRFToken': csrftoken
+                    'X-CSRFToken': csrftoken,
+                    'X-Requested-With': 'XMLHttpRequest',
+                    "HTTP_X_REQUESTED_WITH": "XMLHttpRequest" 
                 },
-                body: formData
+                body: JSON.stringify(data),
             }).then(response => response.json())
-            .then(data => console.log('Success: ', data))
+            .then(data => {
+                console.log('Success: ', data)
+                alert('Transaction complete');
+                window.location.href = "{% url 'store' %}"
+            })
             .catch(error => console.log('Error: ', error));
         }
     </script>
