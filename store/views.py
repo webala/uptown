@@ -3,7 +3,7 @@ from django.http import JsonResponse
 import json
 import datetime
 from .models import *
-from .utils import cookieCart, cartData
+from .utils import cookieCart, cartData, guestOrder 
 # Create your views here.
 
 def store(request):
@@ -98,25 +98,29 @@ def process_order(request):
     if request.user.is_authenticated:
         customer = request.user.customer
         order, created = Order.objects.get_or_create(customer=customer, complete=False)
-        total = float(data['form']['total'])
-        order.transaction_id = transaction_id
-
-        if total == order.get_cart_total:
-            order.complete = True
-        order.save()
-
-        if order.shipping:
-            ShippingAddress.objects.create(
-                customer = customer,
-                order = order,
-                address = data['shipping']['address'],
-                city = data['shipping']['city'],
-                street = data['shipping']['street'],
-                house = data['shipping']['house']
-            )
+        
 
     else:
-        print('User not loggid in')
+        customer, order = guestOrder(request, data)
+        
+
+    total = float(data['form']['total'])
+    order.transaction_id = transaction_id
+
+    if total == order.get_cart_total:
+        order.complete = True
+    order.save()
+
+    if order.shipping:
+        ShippingAddress.objects.create(
+            customer = customer,
+            order = order,
+            address = data['shipping']['address'],
+            city = data['shipping']['city'],
+            street = data['shipping']['street'],
+            house = data['shipping']['house']
+        )
+    
     #serializer = ShippingSerializer(data=request.data)
     print(data)
     return JsonResponse('Payment complete', safe=False)

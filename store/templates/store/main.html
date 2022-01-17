@@ -32,7 +32,7 @@
             return cookieValue;
         }
 
-    const csrftoken = getToken('csrftoken');
+    let csrftoken = getToken('csrftoken');
 
     function getCookie(name) {
         // Split cookie string and get all individual name=value pairs in array
