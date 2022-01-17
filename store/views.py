@@ -1,15 +1,14 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 import json
-from .models import *
-from .serializers import ShippingSerializer
 import datetime
+from .models import *
+from .utils import cookieCart, cartData
 # Create your views here.
 
 def store(request):
     products = Product.objects.all()
-    for product in products:
-        print(product.imageURL)
+   
     context = {
         'products': products
     }
@@ -17,57 +16,22 @@ def store(request):
 
 def cart(request):
 
-    if request.user.is_authenticated:
-        customer = request.user.customer
-        order, created = Order.objects.get_or_create(customer, complete=False)
-        items = order.orderitem_set.all()
-    else:
-        try:
-            cart = json.loads(request.COOKIES['cart'])
-        except:
-            cart = {}
-
-        items = []
-        order = {'get_cart_total': 0, 'get_cart_items': 0, 'shipping': False}
-
-        if cart:
-            for item in cart:
-                product = Product.objects.get(id=item)
-                total = product.price * cart[item]['quantity']
-
-                order['get_cart_total'] += total
-                order['get_cart_items'] += cart[item]['quantity']
-
-                order_item = {
-                    'product': {
-                        'id': product.id,
-                        'name': product.name,
-                        'price': product.price,
-                        'imageURL': product.imageURL    
-                    },
-                    'quantity': cart[item]['quantity'],
-                    'get_total': total
-                }
-
-                items.append(order_item)
-
-                if not product.digital:
-                    order['shipping'] = True
-
+    data = cartData(request)
+    items = data['items']
+    order = data['order']
 
     context = {
         'items': items,
         "order": order
     }
+
     return render(request, 'store/cart.html', context)
 
 def checkout(request):
-    if request.user.is_authenticated:
-        customer = request.user.customer
-        order, created = Order.objects.get_or_create(customer, complete=False)
-        items = order.orderitem_set.all()
-    else:
-        items = []
+    
+    data = cartData(request)
+    items = data['items']
+    order = data['order']
 
     context = {
         'items': items,
