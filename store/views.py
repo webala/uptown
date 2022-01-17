@@ -22,7 +22,38 @@ def cart(request):
         order, created = Order.objects.get_or_create(customer, complete=False)
         items = order.orderitem_set.all()
     else:
+        try:
+            cart = json.loads(request.COOKIES['cart'])
+        except:
+            cart = {}
+
         items = []
+        order = {'get_cart_total': 0, 'get_cart_items': 0, 'shipping': False}
+
+        if cart:
+            for item in cart:
+                product = Product.objects.get(id=item)
+                total = product.price * cart[item]['quantity']
+
+                order['get_cart_total'] += total
+                order['get_cart_items'] += cart[item]['quantity']
+
+                order_item = {
+                    'product': {
+                        'id': product.id,
+                        'name': product.name,
+                        'price': product.price,
+                        'imageURL': product.imageURL    
+                    },
+                    'quantity': cart[item]['quantity'],
+                    'get_total': total
+                }
+
+                items.append(order_item)
+
+                if not product.digital:
+                    order['shipping'] = True
+
 
     context = {
         'items': items,
@@ -73,14 +104,28 @@ def update_item(request):
     return JsonResponse('Item was added', safe=False)
 
 def get_cart_total(request):
-    customer = request.user.customer
-    order = Order.objects.get(customer=customer, complete=False)
+    if request.user.is_authenticated:
+        customer = request.user.customer
+        order = Order.objects.get(customer=customer, complete=False)
 
-    if order:
-        print(order.get_cart_items)
-        return JsonResponse({'cart_items': order.get_cart_items})
+        if order:
+            print(order.get_cart_items)
+            return JsonResponse({'cart_items': order.get_cart_items})
+        else:
+            return JsonResponse({'cart_items': 0})
     else:
-        return JsonResponse({'cart_items': 0})
+        cart_items = 0
+        try:
+            cart = json.loads(request.COOKIES['cart'])
+        except:
+            cart = {}
+        
+        if cart:
+            for item in cart:
+                cart_items += cart[item]['quantity']
+            
+        return JsonResponse({'cart_items': cart_items})
+
 
 def process_order(request):
     transaction_id = datetime.datetime.now().timestamp()
