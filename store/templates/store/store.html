@@ -3,21 +3,54 @@
 {% load static %}
 
 {% block content %}
-    <div class="row">
+   <div class="store">
+       <h2 class="caption">GINICE HII HOLIDAY</h2>
+       <p>Check out our special labor day discounts</p>
+       <div class="offers">
+           {% if product.is_availeble %}
+            {% for product in products %}
+            <div class="product">
+                <img src="{{product.imageURL}}" alt="product-image" class="product-img">
+                <hr/>
+                <div class="product-desc">
+                    <h2 class="product-name">{{product.name}}</h2>
+                    <div class="actions">
+                        <button data-product="{{product.id}}" data-action="add" class="update-cart btn btn-outline-success btn-sm">Add to cart</button>
+                        {% if product.is_availeble %}
+                            <p class="actual-price">ksh {{product.actual_price}}</p>
+                        {% endif %}
+                        <p class="discount-price">ksh {{product.discount_price}}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            {% endif %}
+       </div>
+       <div class="products">
+        {% if not product.is_availeble %}
         {% for product in products %}
-        <div class="col-lg-4 mb-4">
-            <img class='thumbnail product-image' src="{{product.imageURL}}" alt="product image">
-            
-            <div class="box-element product">
-                <h6><strong>{{product.name}}</strong></h6>
-                <hr>
-                <h4 style='display: inline-block; float: right;'>${{product.price|floatformat:2}}</h4>
-                <button data-product={{product.id}} data-action='add' class="update-cart btn btn-outline-secondary add-btn btn-sm">Add to cart</button>
-                <a href="#" class="btn btn-outline-success btn-sm">View</a>
+        <div class="product">
+            <img src="{{product.imageURL}}" alt="product-image" class="product-img">
+            <hr/>
+            <div class="product-desc">
+                <h2 class="product-name">{{product.name}}</h2>
+                <div class="actions">
+                 <button data-product="{{product.id}}" data-action="add" class="update-cart btn btn-outline-success btn-sm">Add to cart</button>
+                 {% if product.is_availeble %}
+                     <p class="actual-price">ksh {{product.actual_price}}</p>
+                 {% endif %}
+                 <p class="discount-price">ksh {{product.discount_price}}</p>
+                </div>
             </div>
         </div>
         {% endfor %}
+        {% endif %}
     </div>
+
+    <div class="contact-us">
+        WhatsApp us at +254790016054 or email us at liquoruptown2@gmail.com for any inquiries.
+    </div>
+   </div>
     
 {% endblock %}
 

@@ -1,9 +1,11 @@
+from django.contrib import messages
 from django.shortcuts import render
 from django.http import JsonResponse
 import json
 import datetime
 from .models import *
 from .utils import cookieCart, cartData, guestOrder 
+import smtplib
 # Create your views here.
 
 def store(request):
@@ -54,8 +56,12 @@ def update_item(request):
     print('OrderItem created = ', created)
 
     if action == 'add':
-        orderItem.quantity += 1
-        print(orderItem.quantity)
+        if orderItem.quantity >= 2:
+            if orderItem.product.is_available:
+                messages.flash('info', 'You can only order a maximum of 2 bottles per item')
+        else:
+            orderItem.quantity += 1
+            print(orderItem.quantity)
     elif action == 'remove':
         orderItem.quantity -= 1
         print(orderItem.quantity)
@@ -92,36 +98,17 @@ def get_cart_total(request):
 
 
 def process_order(request):
-    transaction_id = datetime.datetime.now().timestamp()
     data = json.loads(request.body)
 
-    if request.user.is_authenticated:
-        customer = request.user.customer
-        order, created = Order.objects.get_or_create(customer=customer, complete=False)
-        
+    cc = ConfirmationCode.objects.create (
+        code=data.get('confirmationCode'),
+        name=data.get('name'),
+        email=data.get('email'),
+        amount=data.get('amount')
+    )
 
-    else:
-        customer, order = guestOrder(request, data)
-        
-
-    total = float(data['form']['total'])
-    order.transaction_id = transaction_id
-
-    if total == order.get_cart_total:
-        order.complete = True
-    order.save()
-
-    if order.shipping:
-        ShippingAddress.objects.create(
-            customer = customer,
-            order = order,
-            address = data['shipping']['address'],
-            city = data['shipping']['city'],
-            street = data['shipping']['street'],
-            house = data['shipping']['house']
-        )
+    messages.add_message(request, messages.SUCCESS, 'Payment processed')
     
     #serializer = ShippingSerializer(data=request.data)
-    print(data)
     return JsonResponse('Payment complete', safe=False)
 

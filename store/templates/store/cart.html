@@ -12,7 +12,7 @@
                 <table class='table'>
                     <tr>
                         <th><h5>Items: <strong>{{order.get_cart_items}}</strong></h5></th>
-                        <th><h5>Total: <strong>${{order.get_cart_total|floatformat:2}}</strong></h5></th>
+                        <th><h5>Total: <strong>ksh {{order.get_cart_total|floatformat:2}}</strong></h5></th>
                         <th class='d-flex justify-content-end'>
                             <a href="{% url 'checkout' %}" class="btn btn-success">Checkout</a>
                         </th>
@@ -21,31 +21,36 @@
             </div>
             <br>
             <div class="box-element">
-                <div class="cart-row">
-                    <div class='font-weight-bold' style='flex:2'></div>
-                    <div class='font-weight-bold' style='flex:2'>Item</div>
-                    <div class='font-weight-bold' style='flex:2'>Price</div>
-                    <div class='font-weight-bold' style='flex:2'>Quantity</div>
-                    <div class='font-weight-bold' style='flex:1'>Total</div>
-                </div>
 
-                {% for item in items %}
-                    <div class="cart-row">
-                        <div style='flex:2'>
-                            <img class='product-image' src="{{item.product.imageURL}}" alt='product-image'>
+                <table class="table">
+                    <thead>
+                        
+                      <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Item</th>
+                        <th scope="col">Price</th>
+                        <th scope="col">Quantity</th>
+                        <th scope="col">Totla</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in items %}
+                      <tr>
+                        <th scope="row"> <img class='product-image' src="{{item.product.imageURL}}" alt='product-image'></th>
+                        <td>{{item.product.name}}</td>
+                        <td>ksh {{item.product.price|floatformat:2}}</td>
+                        <td>
+                        <div class="quantity">
+                            <img data-product="{{item.product.id}}" data-action="add" src="{% static 'images/arrow-up.png' %}" alt="up-btn" class="up update-cart">
+                            <img data-product="{{item.product.id}}" data-action="remove" src="{% static 'images/arrow-down.png' %}" alt="up-btn" class="down update-cart">
+                            <p class="quantity">{{item.quantity}}</p>
                         </div>
-                        <div class="align-middle" style='flex:2; display: inline-block;'>{{item.product.name}}</div>
-                        <div style='flex:2'>${{item.product.price|floatformat:2}}</div>
-                        <div style='flex:2'>
-                            <div class="quantity">
-                                <img data-product="{{item.product.id}}" data-action="add" src="{% static 'images/arrow-up.png' %}" alt="up-btn" class="up update-cart">
-                                <img data-product="{{item.product.id}}" data-action="remove" src="{% static 'images/arrow-down.png' %}" alt="up-btn" class="down update-cart">
-                                <p class="quantity">{{item.quantity}}</p>
-                            </div>
-                        </div>
-                        <div style='flex:1'>${{item.get_total}}</div>
-                    </div>
-                {% endfor %}
+                        </td>
+                        <td>ksh {{item.quantity}}</td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
             </div>
         </div>
     </div>

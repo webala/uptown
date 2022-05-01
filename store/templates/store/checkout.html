@@ -11,30 +11,31 @@
                     {% csrf_token %}
                     <div class="user-info mb-3">
                         <div class="form-field">
-                            <input type="text" class="form-control" name='name' id='name' placeholder='Name'>
+                            <input type="text" class="form-control" name='name' id='name' placeholder='Name' required>
                         </div>
                         <div class="form-field">
-                            <input type="email" class="form-control" name='email' id='email' placeholder='Email address'>
+                            <input type="email" class="form-control" name='email' id='email' placeholder='Email address' required>
                         </div>
                     </div>
                     
                     <div class="shipping-info">
                         <h5>Shipping information</h5>
+                        <p class="text-info">Delivery only for Nairobi and its outskirts.</p>
                         <hr>
                         <div class="form-field">
-                            <input type="text" class="form-control" name='city' id='city' placeholder='City'>
+                            <input type="text" class="form-control" name='city' id='city' required placeholder='Location eg Kiambu, Kilimani'>
                         </div>
 
                         <div class="form-field">
-                            <input type="text" class="form-control" name='address' id='address' placeholder='Address'>
+                            <input type="text" class="form-control" name='estate' id='estate' placeholder='Estate'>
                         </div>
 
                         <div class="form-field">
-                            <input type="text" class="form-control" name='street' id='street' placeholder='Street'>
+                            <input type="text" class="form-control" name='building' id='building' placeholder='Building'>
                         </div>
 
                         <div class="form-field">
-                            <input type="text" class="form-control" name='house' id='house' placeholder='House'>
+                            <input type="text" class="form-control" name='house' id='house' placeholder='House Number'>
                         </div>
                     </div>
                     <hr>
@@ -43,12 +44,19 @@
             </div>
 
             <div id="payment-options" class='box-element mt-3 d-none'>
-                <small>Paypal options</small>
-                <button class="make-payment btn btn-primary">Make Payment</button>
+                <p>Please make your payment below. Thank you for shopping with Uptown Liquor.</p>
+                <P> Lipa na M-pesa Till Number: 123456 (Uptown Liquor)</P>
+                <p>Amount: {{order.get_cart_total|floatformat:2}}</p>
+                <input type="hidden" id="amount" value="{{order.get_cart_total}}" />
+                <input class='form-control mb-4' type="text" placeholder="Confirmation Code" id='confirmation-code'/>
+                <button class="btn btn-primary" onclick="submitConfirmationCode()">Submit code</button>
+            </div>
+            <div class="conf d-none">
+                Your payment has been received. Your items are on the way. Please stand by for our rider's call.
             </div>
         </div>
 
-        <div class="col-lg-6">
+        <div class="col-lg-6 order-summary">
             <div class="box-element">
                 <a href="{% url 'cart' %}" class="box-element btn btn-outline-secondary btn-sm mb-3">&#x2190 Back to cart</a>
 
@@ -61,20 +69,20 @@
                     <div class='font-weight-bold' style='flex:2'>Quantity</div>
                     <div class='font-weight-bold' style='flex:1'>Total</div>
                 </div>
+                
                 {% for item in items %}
-                    <div class="cart-row summary">
-                        <div style='flex:2;'>
-                            <img class='product-image thumbnail' src="{{item.product.imageURL}}" alt='product-image'>
-                        </div>
+                    <div class="cart-row smaller-summary">
+                                             
                         <div style='flex:2'>{{item.product.name}}</div>
-                        <div style='flex:2'>${{item.product.price}}</div>
+                        <div style='flex:2'>ksh {{item.product.price}}</div>
                         <div style='flex:2'>{{item.quantity}}</div>
-                        <div style='flex:1'>${{item.get_total}}</div>
+                        <div style='flex:1'>ksh {{item.get_total}}</div>
+                
                     </div>
                 {% endfor %}
                 <hr>
                 <p>Items: {{order.get_cart_items}}</p>
-                <p>Total: ${{order.get_cart_total|floatformat:2}}</p>
+                <p>Total: ksh {{order.get_cart_total|floatformat:2}}</p>
             </div>
         </div>
     </div>
@@ -105,41 +113,28 @@
 
         document.querySelector('.make-payment').addEventListener('click', () => submitFormData())
 
-        function submitFormData() {
-            //const formData = new FormData(form);
-            //console.log(formData.entries());
-            let form = document.getElementById('form');
-            //let formData = new FormData(form);
-
-
-            var userFormData = {
-                'name': null,
-                'email': null,
-                'total': "{{order.get_cart_total}}"
+        function submitConfirmationCode() {
+            const confirmationCode = document.querySelector('#confirmation-code').value
+            const email = document.querySelector('#email').value
+            const name = document.querySelector('#name').value
+            const amount = document.querySelector('#amount').value
+            if (!confirmationCode) {
+                alert('Please input ypur confirmation code')
+                return
             }
 
-            var shippingInfo = {
-                'city': null,
-                'street': null,
-                'address': null,
-                'house': null
+            const data = {
+                confirmationCode,
+                email,
+                name,
+                amount
             }
-
-            if (shipping != 'False') {
-                shippingInfo.address = form.address.value;
-                shippingInfo.city = form.city.value;
-                shippingInfo.street = form.street.value;
-                shippingInfo.house = form.house.value;
-            }
-
-            if (user == 'AnonymousUser') {
-                userFormData.name = form.name.value;
-                userFormData.email = form.email.value;
-            }
-            const data = {'form': userFormData, 'shipping': shippingInfo};
-            console.log(data.shipping);
 
             let url = '/process_order/';
+
+            const redirectHome = () => {
+                window.location.href = "{% url 'store' %}"
+            }
 
             fetch(url, {
                 method: 'POST',
@@ -153,13 +148,17 @@
             }).then(response => response.json())
             .then(data => {
                 console.log('Success: ', data)
+                const conf =document.querySelector('.conf')
+                conf.classList.remove('d-none')
                 alert('Transaction complete');
 
                 cart = {}
                 document.cookie = 'cart=' + JSON.stringify(cart) + ';domain=;path=/'; 
-                window.location.href = "{% url 'store' %}"
+                setTimeout(redirectHome, 20000)
+                
             })
             .catch(error => console.log('Error: ', error));
+            
         }
     </script>
 {% endblock %}

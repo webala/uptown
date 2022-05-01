@@ -23,6 +23,9 @@ function addCokieItem (productId, action) {
         if (cart[productId] == undefined) {
             cart[productId] = {'quantity': 1}
         }
+        else if(cart[productId]['quantity'] >= 2) {
+            alert('You can order a maximum of 2 bottles per item.')
+        }
         else {
             cart[productId]['quantity'] += 1;
         }
