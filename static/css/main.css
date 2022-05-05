@@ -105,10 +105,12 @@ summary.product-image {
     margin: 5px;
 }
 
-
 .contact-us {
-    margin: 10px 20px;
+    margin: 100px 0;
+    font-weight: 600;
+    font-size: 1.2em;
 }
+
 
 
 @media screen and (max-width: 400px) {
@@ -162,5 +164,9 @@ summary.product-image {
     .box-element .product-image {
         width: 70px;
         padding: 0;
+    }
+
+    .contact-us {
+        margin: 10px 20px;
     }
 }
