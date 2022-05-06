@@ -5,8 +5,32 @@ import json
 import datetime
 from .models import *
 from .utils import cookieCart, cartData, guestOrder 
-import smtplib
+from .serializers import ProductSerializer
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 # Create your views here.
+
+
+@api_view(['GET'])
+def all_products(request):
+    products = Product.objects.all()
+
+    serializer = ProductSerializer(products, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def cart_items(request):
+    data = cartData(request)
+    items = data['items']
+    order = data['order']
+    
+    context = {
+        'items': items,
+        "order": order
+    }
+
+    return Response(context)
+
 
 def store(request):
     products = Product.objects.all()

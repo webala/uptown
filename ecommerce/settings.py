@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-&c4ptovi8r9)4e1r6qz4g9m*6iw6_5y0vvs=&!c_xu^%9njjq&
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['ec2-54-89-190-150.compute-1.amazonaws.com']
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'store',
     #third party
     'bootstrap5',
-    'rest_framework'
+    'rest_framework',
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
@@ -53,6 +54,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'ecommerce.urls'
@@ -137,3 +139,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images')
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+CORS_ORIGIN_WHITELIST = [
+    'http://localhost:3000'
+]
