@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Product
+from .models import ConfirmationCode, Product
 
 class ShippingSerializer(serializers.Serializer):
     name = serializers.CharField(required=False)
@@ -21,4 +21,15 @@ class ProductSerializer(serializers.ModelSerializer):
             'is_availeble',
             'discount_price',
             'imageURL'
+        ]
+
+
+class ConfirmationCodeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ConfirmationCode
+        fields = [ 
+            'code',
+            'name',
+            'email',
+            'amount'
         ]

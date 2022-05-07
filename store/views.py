@@ -5,9 +5,10 @@ import json
 import datetime
 from .models import *
 from .utils import cookieCart, cartData, guestOrder 
-from .serializers import ProductSerializer
+from .serializers import ConfirmationCodeSerializer, ProductSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework import viewsets
 # Create your views here.
 
 
@@ -136,3 +137,7 @@ def process_order(request):
     #serializer = ShippingSerializer(data=request.data)
     return JsonResponse('Payment complete', safe=False)
 
+
+class ConfirmationoCodeViewset(viewsets.ModelViewSet):
+    serializer_class = ConfirmationCodeSerializer
+    queryset = ConfirmationCode.objects.all()
